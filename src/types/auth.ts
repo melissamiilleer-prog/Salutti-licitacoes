@@ -1,0 +1,49 @@
+/**
+ * Tipos do módulo de autenticação.
+ *
+ * Isolados aqui para que, na integração futura com Supabase, baste
+ * trocar a implementação de `AuthService` (ver src/services/authService.ts)
+ * sem precisar alterar componentes ou o Context — os tipos e o contrato
+ * de uso (login/logout/user) permanecem os mesmos.
+ */
+
+export type UserRole = 'admin' | 'funcionario' | 'cliente'
+
+export interface AuthUser {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+}
+
+/** Formato mockado hoje; ao integrar com Supabase, o campo `password`
+ *  deixa de existir aqui e passa a ser validado no backend/Auth. */
+export interface MockCredential extends AuthUser {
+  password: string
+}
+
+export interface LoginCredentials {
+  email: string
+  password: string
+}
+
+export interface AuthContextValue {
+  user: AuthUser | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  login: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>
+  logout: () => void
+}
+
+/** Mapa de para onde cada perfil deve ser redirecionado após o login. */
+export const ROLE_HOME_ROUTE: Record<UserRole, string> = {
+  admin: '/admin',
+  funcionario: '/funcionario',
+  cliente: '/cliente',
+}
+
+export const ROLE_LABEL: Record<UserRole, string> = {
+  admin: 'Administrador',
+  funcionario: 'Funcionário',
+  cliente: 'Cliente',
+}
